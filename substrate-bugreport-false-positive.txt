@@ -1,0 +1,368 @@
+bug report:
+
+1. Test Phones: Samsung Galaxy S3,  Galaxy Nexus
+
+2. summary
+ 
+    After hooking the api execve() and a hard-reboot, the "rild" process will crash, every time it is started.
+    
+    Here is the SIGSEGV error message from DDMS
+        
+        11-05 10:16:49.845 27489 27489 F libc    : Fatal signal 11 (SIGSEGV) at 0x022101e8 (code=1)
+        
+    Here is the dump info:
+    
+        11-05 10:16:50.250  1883  1883 I DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+        11-05 10:16:50.250  1883  1883 I DEBUG   : Build fingerprint: 'samsung/m0zm/m0cmcc:4.0.4/IMM76D/I9308ZMBLL2:user/release-keys'
+        11-05 10:16:50.250  1883  1883 I DEBUG   : pid: 27489, tid: 27489  >>> /system/bin/rild <<<
+        11-05 10:16:50.255  1883  1883 I DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 022101e8
+        11-05 10:16:50.255  1883  1883 I DEBUG   :  r0 402ad670  r1 0012e22b  r2 0012e22b  r3 022101e8
+        11-05 10:16:50.260  1883  1883 I DEBUG   :  r4 402a6b24  r5 0000a190  r6 402ad670  r7 40089fdb
+        11-05 10:16:50.260  1883  1883 I DEBUG   :  r8 402a6604  r9 00000003  10 0000a238  fp 00000003
+        11-05 10:16:50.265  1883  1883 I DEBUG   :  ip 402a6c90  sp bedfa4d0  lr 4021ba99  pc 022101e8  cpsr 80000010
+        11-05 10:16:50.265  1883  1883 I DEBUG   :  d0  d63816800a79e47c  d1  00000064000f4240
+        11-05 10:16:50.265  1883  1883 I DEBUG   :  d2  00000000000f4240  d3  3ff0000000000000
+        11-05 10:16:50.270  1883  1883 I DEBUG   :  d4  3ff0000000000000  d5  0000000000000000
+        11-05 10:16:50.270  1883  1883 I DEBUG   :  d6  0000000000000000  d7  000f424000000000
+        11-05 10:16:50.270  1883  1883 I DEBUG   :  d8  0000000000000000  d9  0000000000000000
+        11-05 10:16:50.270  1883  1883 I DEBUG   :  d10 0000000000000000  d11 0000000000000000
+        11-05 10:16:50.275  1883  1883 I DEBUG   :  d12 0000000000000000  d13 0000000000000000
+        11-05 10:16:50.275  1883  1883 I DEBUG   :  d14 0000000000000000  d15 0000000000000000
+        11-05 10:16:50.275  1883  1883 I DEBUG   :  d16 412e848000000000  d17 43e0000000000000
+        11-05 10:16:50.280  1883  1883 I DEBUG   :  d18 4028000000000000  d19 3ff0000000000000
+        11-05 10:16:50.280  1883  1883 I DEBUG   :  d20 4197d78400000000  d21 0000000000000000
+        11-05 10:16:50.280  1883  1883 I DEBUG   :  d22 0000000000000000  d23 0000000000000000
+        11-05 10:16:50.280  1883  1883 I DEBUG   :  d24 0000000000000000  d25 0000000000000000
+        11-05 10:16:50.280  1883  1883 I DEBUG   :  d26 0000000000000000  d27 0000000000000000
+        11-05 10:16:50.285  1883  1883 I DEBUG   :  d28 0000000000000000  d29 0000000000000000
+        11-05 10:16:50.285  1883  1883 I DEBUG   :  d30 0000000000000000  d31 0000000000000000
+        11-05 10:16:50.285  1883  1883 I DEBUG   :  scr 80000010
+        11-05 10:16:50.285  1883  1883 I DEBUG   : 
+        11-05 10:16:50.445  1883  1883 I DEBUG   :          #00  pc 022101e8  
+        11-05 10:16:50.450  1883  1883 I DEBUG   :          #01  pc 00023a96  /system/lib/libsec-ril.so (RIL_Init)
+        11-05 10:16:50.450  1883  1883 I DEBUG   :          #02  pc 00008e56  /system/bin/rild
+        11-05 10:16:50.450  1883  1883 I DEBUG   : 
+        11-05 10:16:50.450  1883  1883 I DEBUG   : code around pc:
+        11-05 10:16:50.450  1883  1883 I DEBUG   : 022101c8 ffffffff ffffffff ffffffff ffffffff  ................
+        11-05 10:16:50.450  1883  1883 I DEBUG   : 022101d8 ffffffff ffffffff ffffffff ffffffff  ................
+        11-05 10:16:50.455  1883  1883 I DEBUG   : 022101e8 ffffffff ffffffff ffffffff ffffffff  ................
+        11-05 10:16:50.455  1883  1883 I DEBUG   : 022101f8 ffffffff ffffffff ffffffff ffffffff  ................
+        11-05 10:16:50.455  1883  1883 I DEBUG   : 02210208 ffffffff ffffffff ffffffff ffffffff  ................
+        11-05 10:16:50.455  1883  1883 I DEBUG   : 
+        11-05 10:16:50.455  1883  1883 I DEBUG   : code around lr:
+        11-05 10:16:50.455  1883  1883 I DEBUG   : 4021ba78 f8df52f8 912b8430 f7f82100 44f8e8f8  .R..0.+..!.....D
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 4021ba88 0704f1a8 0834f108 3f04f857 47984630  ......4.W..?0F.G
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 4021ba98 d1f94547 f8df4630 22019410 f8402100  GE..0F.....".!@.
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 4021baa8 f7f82b04 f854ea5e 21000009 780760b1  .+..^.T....!.`.x
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 4021bab8 f7f8b14f 49fde8fa 44794afd 4603447a  O......I.JyDzD.F
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 
+        11-05 10:16:50.460  1883  1883 I DEBUG   : memory map around addr 022101e8:
+        11-05 10:16:50.460  1883  1883 I DEBUG   : 00bd6000-00bff000 [heap]
+        11-05 10:16:50.465  1883  1883 I DEBUG   : (no map for address)
+        11-05 10:16:50.465  1883  1883 I DEBUG   : 10000000-10001000 
+        11-05 10:16:50.465  1883  1883 I DEBUG   : 
+        11-05 10:16:50.465  1883  1883 I DEBUG   : stack:
+        11-05 10:16:50.465  1883  1883 I DEBUG   :     bedfa490  00000000  
+        11-05 10:16:50.465  1883  1883 I DEBUG   :     bedfa494  00000000  
+        11-05 10:16:50.465  1883  1883 I DEBUG   :     bedfa498  00000000  
+        11-05 10:16:50.470  1883  1883 I DEBUG   :     bedfa49c  00000000  
+        11-05 10:16:50.470  1883  1883 I DEBUG   :     bedfa4a0  00000000  
+        11-05 10:16:50.470  1883  1883 I DEBUG   :     bedfa4a4  00000000  
+        11-05 10:16:50.470  1883  1883 I DEBUG   :     bedfa4a8  00000000  
+        11-05 10:16:50.470  1883  1883 I DEBUG   :     bedfa4ac  00000000  
+        11-05 10:16:50.475  1883  1883 I DEBUG   :     bedfa4b0  00000000  
+        11-05 10:16:50.475  1883  1883 I DEBUG   :     bedfa4b4  00000000  
+        11-05 10:16:50.475  1883  1883 I DEBUG   :     bedfa4b8  00000000  
+        11-05 10:16:50.475  1883  1883 I DEBUG   :     bedfa4bc  0012e22b  
+        11-05 10:16:50.475  1883  1883 I DEBUG   :     bedfa4c0  402a65dc  /system/lib/libsec-ril.so
+        11-05 10:16:50.480  1883  1883 I DEBUG   :     bedfa4c4  402a6b24  /system/lib/libsec-ril.so
+        11-05 10:16:50.480  1883  1883 I DEBUG   :     bedfa4c8  df0027ad  
+        11-05 10:16:50.480  1883  1883 I DEBUG   :     bedfa4cc  00000000  
+        11-05 10:16:50.480  1883  1883 I DEBUG   : #01 bedfa4d0  400fc185  /system/lib/libril.so
+        11-05 10:16:50.480  1883  1883 I DEBUG   :     bedfa4d4  400b94f4  
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4d8  bedfa5c0  [stack]
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4dc  40084d45  /system/lib/libc.so
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4e0  40160000  /system/lib/libz.so
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4e4  b000b0e0  
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4e8  00004f9c  
+        11-05 10:16:50.485  1883  1883 I DEBUG   :     bedfa4ec  00000000  
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa4f0  bedfa514  [stack]
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa4f4  bedfab64  [stack]
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa4f8  bedfa514  [stack]
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa4fc  0000003c  
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa500  00bd9910  [heap]
+        11-05 10:16:50.500  1883  1883 I DEBUG   :     bedfa504  00006b62  
+        11-05 10:16:50.505  1883  1883 I DEBUG   :     bedfa508  10000000  
+        11-05 10:16:50.505  1883  1883 I DEBUG   :     bedfa50c  10000000  
+        11-05 10:16:50.505  1883  1883 I DEBUG   :     bedfa510  00006b62  
+        11-05 10:16:50.505  1883  1883 I DEBUG   :     bedfa514  00000000  
+        11-05 10:16:50.505  1883  1883 I DEBUG   :     bedfa518  100fff00  
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa51c  00bd9910  [heap]
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa520  400ffd84  /system/lib/libril.so
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa524  00000001  
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa528  00000000  
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa52c  400ffd84  /system/lib/libril.so
+        11-05 10:16:50.510  1883  1883 I DEBUG   :     bedfa530  00000000  
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa534  00000000  
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa538  b000b310  
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa53c  00000001  
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa540  bedfa5c0  [stack]
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa544  400826a0  /system/lib/libc.so
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa548  0d000000  
+        11-05 10:16:50.515  1883  1883 I DEBUG   :     bedfa54c  0000000d  
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa550  00000000  
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa554  400c3424  /dev/__properties__ (deleted)
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa558  0000a1b0  /system/bin/rild
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa55c  400c3420  /dev/__properties__ (deleted)
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa560  0000a1b0  /system/bin/rild
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa564  0000a1b0  /system/bin/rild
+        11-05 10:16:50.520  1883  1883 I DEBUG   :     bedfa568  400c3400  /dev/__properties__ (deleted)
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa56c  4009b4a5  /system/lib/libc.so
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa570  0000a1b0  /system/bin/rild
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa574  0000a1b0  /system/bin/rild
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa578  00009101  /system/bin/rild
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa57c  0012e22b  
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa580  4021ba4d  /system/lib/libsec-ril.so
+        11-05 10:16:50.525  1883  1883 I DEBUG   :     bedfa584  00000001  
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa588  0000a240  /system/bin/rild
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa58c  00008f48  /system/bin/rild
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa590  bedfab64  [stack]
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa594  4021ba4d  /system/lib/libsec-ril.so
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa598  00000003  
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa59c  bedfa5c0  [stack]
+        11-05 10:16:50.530  1883  1883 I DEBUG   :     bedfa5a0  0000a1b0  /system/bin/rild
+        11-05 10:16:50.535  1883  1883 I DEBUG   :     bedfa5a4  00008e59  /system/bin/rild
+        11-05 10:16:50.650  2072  2105 I BootReceiver: Copying /data/tombstones/tombstone_06 to DropBox (SYSTEM_TOMBSTONE)
+        11-05 10:16:50.655  1883  1883 I DEBUG   : !@dumpstate -k -t -n -z -d -o /data/log/dumpstate_app_native -m 27489
+        
+    After some reverse engineering, I found the code snippet causing the SIGSEGV in the libsec-ril.so library,  
+    which is a proprietary binary file from Samsung Inc.      
+    
+    What this piece of code has done is easy to understand. It calls each routine in the InitFunctionTable.
+    For some reason, when executing the instruction "BLX R3", the R3 register is set to an invalid value -- 
+    "022101e8"(refer to the above dump info), then result in a SIGSEGV. 
+    
+    According to the assembly code, the value of R3 is got from a memory address indexed by R7+0xXY.
+    Every time the instruction "BLX R3" is executed, the value of R7 should NOT change, but after the 
+    OemInitSIM routine in InitFunctionTable is called, the value changes.
+
+    
+        .text:00023A90             loop_call_each_routine_in_InitFunctionTable
+        .text:00023A90                                                     ; CODE XREF: RIL_Init+4Ej
+        .text:00023A90 57 F8 04 3F                 LDR.W           R3, [R7,#(InitFunctionTable - 0xAE5CC)]!
+        .text:00023A94 30 46                       MOV             R0, R6
+        .text:00023A96 98 47                       BLX             R3
+        .text:00023A98 47 45                       CMP             R7, R8
+        .text:00023A9A F9 D1                       BNE             loop_call_each_routine_in_InitFunctionTable
+        
+        .data.rel.ro:000AE5D0 5D DD 02 00 InitFunctionTable DCD OemInitNetwork+1  ; DATA XREF: RIL_Init+3Ao
+        .data.rel.ro:000AE5D0                                                     ; RIL_Init:loop_call_each_routine_in_InitFunctionTableo ...
+        .data.rel.ro:000AE5D4 A5 76 02 00                 DCD OemInitCall+1
+        .data.rel.ro:000AE5D8 51 35 03 00                 DCD OemInitData+1
+        .data.rel.ro:000AE5DC 19 AC 02 00                 DCD OemInitSMS+1
+        .data.rel.ro:000AE5E0 DD A5 02 00                 DCD OemInitSIM+1
+        .data.rel.ro:000AE5E4 AD DD 02 00                 DCD OemInitSs+1
+        .data.rel.ro:000AE5E8 01 20 03 00                 DCD OemInitSound+1
+        .data.rel.ro:000AE5EC 75 EA 02 00                 DCD OemInitMisc+1
+        .data.rel.ro:000AE5F0 E1 AD 06 00                 DCD OemInitStk+1
+        .data.rel.ro:000AE5F4 2D 47 02 00                 DCD OemInitPower+1
+        .data.rel.ro:000AE5F8 F1 97 06 00                 DCD OemInitGps+1
+        .data.rel.ro:000AE5FC F9 83 03 00                 DCD OemInitFactory+1
+        .data.rel.ro:000AE600 49 60 03 00                 DCD OemInitImei+1
+        .data.rel.ro:000AE604 DD 54 03 00                 DCD OemInitCfg+1
+        .data.rel.ro:000AE604             ; .data.rel.ro  ends
+
+    Here is the routine -- OemInitSIM. The code looks like normal, except the call to the system() api.    
+
+        .text:0002A5DC
+        .text:0002A5DC                             EXPORT OemInitSIM
+        .text:0002A5DC             OemInitSIM                              ; DATA XREF: .data.rel.ro:000AE5E0o
+        .text:0002A5DC
+        .text:0002A5DC             var_120         = -0x120
+        .text:0002A5DC             var_114         = -0x114
+        .text:0002A5DC             var_14          = -0x14
+        .text:0002A5DC
+        .text:0002A5DC 30 B5                       PUSH            {R4,R5,LR}
+        .text:0002A5DE 1F 4C                       LDR             R4, =(_GLOBAL_OFFSET_TABLE_ - 0x2A5E8)
+        .text:0002A5E0 1F 4A                       LDR             R2, =(__stack_chk_guard_ptr - 0xAEB24)
+        .text:0002A5E2 C5 B0                       SUB             SP, SP, #0x114
+        .text:0002A5E4 7C 44                       ADD             R4, PC ; _GLOBAL_OFFSET_TABLE_
+        .text:0002A5E6 00 F5 62 60                 ADD.W           R0, R0, #0xE20
+        .text:0002A5EA 03 AD                       ADD             R5, SP, #0x120+var_114
+        .text:0002A5EC 1C 30                       ADDS            R0, #0x1C ; s
+        .text:0002A5EE A1 58                       LDR             R1, [R4,R2] ; __stack_chk_guard
+        .text:0002A5F0 44 22                       MOVS            R2, #0x44 ; n
+        .text:0002A5F2 0B 68                       LDR             R3, [R1]
+        .text:0002A5F4 00 21                       MOVS            R1, #0  ; c
+        .text:0002A5F6 43 93                       STR             R3, [SP,#0x120+var_14]
+        .text:0002A5F8 F1 F7 3C EB                 BLX             memset
+        .text:0002A5FC FF 22                       MOVS            R2, #0xFF ; n
+        .text:0002A5FE 00 21                       MOVS            R1, #0  ; c
+        .text:0002A600 28 46                       MOV             R0, R5  ; s
+        .text:0002A602 F1 F7 38 EB                 BLX             memset
+        .text:0002A606 17 49                       LDR             R1, =(aRm - 0x2A60E)
+        .text:0002A608 28 46                       MOV             R0, R5  ; dest
+        .text:0002A60A 79 44                       ADD             R1, PC  ; "rm "
+        .text:0002A60C F1 F7 76 EC                 BLX             strcpy
+        .text:0002A610 15 49                       LDR             R1, =(aDataMiscRadi_0 - 0x2A618)
+        .text:0002A612 28 46                       MOV             R0, R5  ; dest
+        .text:0002A614 79 44                       ADD             R1, PC  ; "/data/misc/radio/dlnk"
+        .text:0002A616 F1 F7 26 ED                 BLX             strcat
+        .text:0002A61A 28 46                       MOV             R0, R5  ; command
+        .text:0002A61C F1 F7 10 ED                 BLX             system
+        .text:0002A620 00 28                       CMP             R0, #0
+        .text:0002A622 0F DA                       BGE             loc_2A644
+        .text:0002A624 DF F8 44 C0                 LDR.W           R12, =(bdbg_enable_ptr - 0xAEB24)
+        .text:0002A628 54 F8 0C 30                 LDR.W           R3, [R4,R12] ; bdbg_enable
+        .text:0002A62C 18 78                       LDRB            R0, [R3]
+        .text:0002A62E 48 B1                       CBZ             R0, loc_2A644
+        .text:0002A630 0F 49                       LDR             R1, =(aRil - 0x2A63C)
+        .text:0002A632 06 20                       MOVS            R0, #6
+        .text:0002A634 0F 4A                       LDR             R2, =(aSSystemSError - 0x2A63E)
+        .text:0002A636 10 4B                       LDR             R3, =(aOeminitsim - 0x2A642)
+        .text:0002A638 79 44                       ADD             R1, PC  ; "RIL"
+        .text:0002A63A 7A 44                       ADD             R2, PC  ; "%s(): system(%s) error"
+        .text:0002A63C 00 95                       STR             R5, [SP,#0x120+var_120]
+        .text:0002A63E 7B 44                       ADD             R3, PC  ; "OemInitSIM"
+        .text:0002A640 F1 F7 F4 EA                 BLX             __android_log_print
+        .text:0002A644
+        .text:0002A644             loc_2A644                               ; CODE XREF: OemInitSIM+46j
+        .text:0002A644                                                     ; OemInitSIM+52j
+        .text:0002A644 DF F8 18 E0                 LDR.W           LR, =(__stack_chk_guard_ptr - 0xAEB24)
+        .text:0002A648 43 99                       LDR             R1, [SP,#0x120+var_14]
+        .text:0002A64A 54 F8 0E 00                 LDR.W           R0, [R4,LR] ; __stack_chk_guard
+        .text:0002A64E 02 68                       LDR             R2, [R0]
+        .text:0002A650 91 42                       CMP             R1, R2
+        .text:0002A652 01 D0                       BEQ             loc_2A658
+        .text:0002A654 F1 F7 7A EB                 BLX             __stack_chk_fail
+        .text:0002A658             ; ---------------------------------------------------------------------------
+        .text:0002A658
+        .text:0002A658             loc_2A658                               ; CODE XREF: OemInitSIM+76j
+        .text:0002A658 45 B0                       ADD             SP, SP, #0x114
+        .text:0002A65A 30 BD                       POP             {R4,R5,PC}
+        .text:0002A65A             ; End of function OemInitSIM
+        
+        
+    The source code of system() API on the Android platform(bionic), is as follows:
+    It calls vfork() to create a child process and then execute the command in the child process.
+    The vfork() API shares memory between the parent process and the child process, and the 
+    content of some memory changed in the child process maybe affect the the content in the 
+    parent process. I think that is the problem, so I modified the source code of my simple 
+    substrate extension by adding the system() API hook. In the new system() implemention, 
+    I just copied the source code of system() in the Android source code, and replace the 
+    vfork() with the the fork(). And It works! No crash any more.
+    
+    -- switch (pid = vfork()) {
+    ++ switch (pid = fork()) {
+    
+    
+    
+    file path:   Android_Source_Code/platform/bionic/libc/unistd/system.c
+    
+    extern char **environ;
+    int
+    system(const char *command)
+    {
+      pid_t pid;
+        sig_t intsave, quitsave;
+        sigset_t mask, omask;
+        int pstat;
+        char *argp[] = {"sh", "-c", NULL, NULL};
+
+        if (!command)		/* just checking... */
+            return(1);
+
+        argp[2] = (char *)command;
+
+        sigemptyset(&mask);
+        sigaddset(&mask, SIGCHLD);
+        sigprocmask(SIG_BLOCK, &mask, &omask);
+        switch (pid = vfork()) {
+        case -1:			/* error */
+            sigprocmask(SIG_SETMASK, &omask, NULL);
+            return(-1);
+        case 0:				/* child */
+            sigprocmask(SIG_SETMASK, &omask, NULL);
+            execve(_PATH_BSHELL, argp, environ);
+        _exit(127);
+      }
+
+        intsave = (sig_t)  bsd_signal(SIGINT, SIG_IGN);
+        quitsave = (sig_t) bsd_signal(SIGQUIT, SIG_IGN);
+        pid = waitpid(pid, (int *)&pstat, 0);
+        sigprocmask(SIG_SETMASK, &omask, NULL);
+        (void)bsd_signal(SIGINT, intsave);
+        (void)bsd_signal(SIGQUIT, quitsave);
+        return (pid == -1 ? -1 : pstat);
+    }
+
+    The solution above can have my problems solved, but I thought it not perfect, cause I would have
+    to replace vfork() with fork() every times. So, I decided to dig a little deeper. 
+    
+    I found that, when cydia substrate doing a inline hook, e.g. execve, it looks like this:
+    I'm sure you are very clear about this process. So I will get straight to the point. 
+    In the CodeSnippet2, A.K.A. the trampoline code, you use the R3 register and restore them 
+    after the "BLX R3" instruction. I don't think it's correct to do like this. Let's follow 
+    the execution flow of the "BLX R3" instruction, it will call the original function(execve),
+    and the "SVC 0" instruction will perform a system call, from user space to kernel space.
+    Before that(into kernel space), comparing with the original API's implemention, the value
+    of R3 register has been changed by your trampoline code(CodeSnippet2). According to this
+    article, the 7 registers, R0-R6, may be used by the code in the kernel space. 
+        http://brnz.org/hbr/?p=955
+    And there is another thing, according to the man pages, the execve() API does not return
+    on success, so the instruction "POP {R3,PC}" would not restore the value of R3.
+    
+    The fix for this bug is not complicated. I think you could have at lease two options;
+    0. restore the value of every register
+
+    1. the "LDR Rd, label" instruction. Use the PC register as destination register, but
+           there is a limit: the source argument of this instruction must be a "label".
+    2. the "PUSH reglist; POP reglist" instruction pair. Push the address of callee function
+           onto the stack and the pop it out to PC register.(you could add some dummy 
+           registers too, like PUSH {R0, R3} ... POP {R0, PC})
+     
+    (*** I have not tested these two methods, so there may be something wrong. sorry)
+   
+      
+    
+    CodeSnippet1 : execve:
+    
+    libc.so:4005A16C 04 F0 1F E5 LDR     PC, =(loc_4017A108+1)
+    libc.so:4005A16C             ; ---------------------------------------------------------------------------
+    libc.so:4005A170 09 A1 17 40 off_4005A170 DCD loc_4017A108+1         ; DATA XREF: libc.so:4005A16Cr      ----> goto next code snippet
+    libc.so:4005A174             ; ---------------------------------------------------------------------------
+    libc.so:4005A174
+    libc.so:4005A174             loc_4005A174                            ; CODE XREF: debug004:400A6008j
+    libc.so:4005A174                                                     ; DATA XREF: debug004:400A6008o ...
+    libc.so:4005A174 00 00 00 EF SVC     0
+    libc.so:4005A178 90 00 BD E8 LDMFD   SP!, {R4,R7}
+    libc.so:4005A17C 00 00 B0 E1 MOVS    R0, R0
+    libc.so:4005A180 1E FF 2F 51 BXPL    LR
+    libc.so:4005A184 4B B8 00 EA B       _40074A39
+    libc.so:4005A184             ; ---------------------------------------------------------------------------
+    
+    CodeSnippet2:
+    
+    libHookExecve.cy.so:4017A108
+    libHookExecve.cy.so:4017A108             loc_4017A108                            ; CODE XREF: libc.so:4005A16Cj
+    libHookExecve.cy.so:4017A108                                                     ; DATA XREF: libc.so:4005A16Co ...
+    libHookExecve.cy.so:4017A108 08 B5       PUSH    {R3,LR}
+    libHookExecve.cy.so:4017A10A 03 4B       LDR     R3, =(dword_4017CF5C - 0x4017A110)
+    libHookExecve.cy.so:4017A10C 7B 44       ADD     R3, PC ; dword_4017CF5C
+    libHookExecve.cy.so:4017A10E 1B 68       LDR     R3, [R3]
+    libHookExecve.cy.so:4017A110 1B 68       LDR     R3, [R3]
+    libHookExecve.cy.so:4017A112 98 47       BLX     R3        ----------------> goto next code snippet
+    libHookExecve.cy.so:4017A114 08 BD       POP     {R3,PC}
+    libHookExecve.cy.so:4017A114             ; ---------------------------------------------------------------------------
+    
+    CodeSnippet3:
+    
+    debug004:400A6000             CODE32
+    debug004:400A6000 90 00 2D E9 STMFD   SP!, {R4,R7}
+    debug004:400A6004 0B 70 A0 E3 MOV     R7, #0xB 
+    debug004:400A6008 04 F0 1F E5 LDR     PC, =loc_4005A174     ----> goto to CodeSnippet1
+    debug004:400A6008             ; ---------------------------------------------------------------------------
+    
+    
+    
+    
